@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Grid,
@@ -60,10 +60,18 @@ const BikeList = () => {
   const [addBikeDialogOpen, setAddBikeDialogOpen] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchBikes();
-  }, []); // Only fetch on component mount
+    
+    // Check if we should open the Add Bike dialog
+    if (location.state?.openAddBikeDialog) {
+      setAddBikeDialogOpen(true);
+      // Clear the state to prevent reopening on subsequent renders
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]); // Only fetch on component mount and when location state changes
 
   // Debounced search effect - waits 2 seconds after user stops typing
   useEffect(() => {
@@ -301,10 +309,10 @@ const BikeList = () => {
       <Paper elevation={2} sx={{ p: { xs: 1.5, sm: 2 }, mb: 4 }}>
         <Box sx={{ 
           display: 'flex', 
-          gap: { xs: 1, sm: 2 }, 
-          mb: 1.5, 
+          gap: { xs: 1, sm: 1 }, 
           flexWrap: 'wrap',
-          flexDirection: { xs: 'column', sm: 'row' }
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: 'center'
         }}>
           <TextField
             placeholder="Search bikes..."
@@ -315,7 +323,10 @@ const BikeList = () => {
             }}
             sx={{ 
               minWidth: { xs: '100%', sm: 250 },
-              flex: { xs: '1 1 100%', sm: '0 1 auto' }
+              flex: { xs: '1 1 100%', sm: '0 1 auto' },
+              '& .MuiOutlinedInput-root': {
+                height: '40px'
+              }
             }}
           />
           <Box sx={{ 
@@ -329,14 +340,20 @@ const BikeList = () => {
               onClick={() => setShowFilters(!showFilters)}
               startIcon={<FilterIcon />}
               fullWidth={false}
-              sx={{ flex: { xs: '1 1 auto', sm: '0 1 auto' } }}
+              sx={{ 
+                flex: { xs: '1 1 auto', sm: '0 1 auto' },
+                height: '40px'
+              }}
             >
               {showFilters ? 'Hide' : 'Show'} Filters
             </Button>
             <Button 
               variant="text" 
               onClick={clearFilters}
-              sx={{ flex: { xs: '1 1 auto', sm: '0 1 auto' } }}
+              sx={{ 
+                flex: { xs: '1 1 auto', sm: '0 1 auto' },
+                height: '40px'
+              }}
             >
               Clear All
             </Button>

@@ -10,19 +10,21 @@ import {
   Alert,
   Link as MuiLink,
   FormControl,
-  FormLabel,
-  RadioGroup,
   FormControlLabel,
   Radio,
+  RadioGroup,
+  FormLabel,
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
   const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: '',
+    role: 'customer',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,8 +40,8 @@ const Register = () => {
   };
 
   const validateForm = () => {
-    if (!formData.role) {
-      setError('Please select a role (Seller or Customer)');
+    if (!formData.lastName.trim()) {
+      setError('Last name is required');
       return false;
     }
     
@@ -67,24 +69,25 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const result = await register(formData.email, formData.password, formData.role);
+      const result = await register(formData.email, formData.password, formData.firstName, formData.lastName, formData.role);
       
       if (result.success) {
         if (result.requiresOTP) {
-          // Redirect to OTP verification page with email and registration data
-          navigate('/verify-otp', { 
-            state: { 
+          // Navigate to OTP verification with registration data
+          navigate('/verify-otp', {
+            state: {
               email: formData.email,
-              message: result.message || 'Please check your email for OTP verification code',
-              registrationData: {
-                email: formData.email,
-                password: formData.password,
-                role: formData.role
-              }
-            } 
+              message: result.message,
+                             registrationData: {
+                 email: formData.email,
+                 password: formData.password,
+                 first_name: formData.firstName,
+                 last_name: formData.lastName,
+                 role: formData.role
+               }
+            }
           });
         } else {
-          // No OTP required, redirect to home
           navigate('/');
         }
       } else {
@@ -117,42 +120,60 @@ const Register = () => {
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
+              fullWidth
+              id="firstName"
+              label="First Name"
+              name="firstName"
+              autoComplete="given-name"
+              autoFocus
+              value={formData.firstName}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="lastName"
+              label="Last Name"
+              name="lastName"
+              autoComplete="family-name"
+              value={formData.lastName}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
               required
               fullWidth
               id="email"
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
               value={formData.email}
               onChange={handleChange}
               type="email"
             />
-            
-            <FormControl component="fieldset" margin="normal" required fullWidth>
-              <FormLabel component="legend">I want to:</FormLabel>
+
+            <FormControl component="fieldset" margin="normal" fullWidth>
+              <FormLabel component="legend">I want to</FormLabel>
               <RadioGroup
+                row
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                row
-                sx={{ mt: 1 }}
               >
-                <FormControlLabel
-                  value="seller"
-                  control={<Radio />}
-                  label="Sell Bikes"
-                  sx={{ flex: 1 }}
-                />
                 <FormControlLabel
                   value="customer"
                   control={<Radio />}
                   label="Buy Bikes"
-                  sx={{ flex: 1 }}
+                />
+                <FormControlLabel
+                  value="seller"
+                  control={<Radio />}
+                  label="Sell Bikes"
                 />
               </RadioGroup>
             </FormControl>
-            
+
             <TextField
               margin="normal"
               required

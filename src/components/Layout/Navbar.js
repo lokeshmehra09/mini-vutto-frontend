@@ -64,10 +64,7 @@ const Navbar = () => {
     navigate('/my-listings');
   };
 
-  const handleAddBike = () => {
-    handleUserMenuClose();
-    navigate('/add-bike');
-  };
+
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#1976d2' }}>
@@ -104,15 +101,6 @@ const Navbar = () => {
             
             {isAuthenticated ? (
               <>
-                {isSeller() && (
-                <Button
-                  color="inherit"
-                  component={Link}
-                  to="/add-bike"
-                >
-                  Add Bike
-                </Button>
-                )}
                 {isSeller() && (
                 <Button
                   color="inherit"
@@ -192,15 +180,6 @@ const Navbar = () => {
               {isSeller() && (
               <MenuItem
                 component={Link}
-                to="/add-bike"
-                onClick={handleMobileMenuClose}
-              >
-                Add Bike
-              </MenuItem>
-              )}
-              {isSeller() && (
-              <MenuItem
-                component={Link}
                 to="/my-listings"
                 onClick={handleMobileMenuClose}
               >
@@ -248,19 +227,6 @@ const Navbar = () => {
             horizontal: 'right',
           }}
         >
-          <MenuItem onClick={handleProfile}>
-            Profile
-          </MenuItem>
-          {isSeller() && (
-          <MenuItem onClick={handleMyListings}>
-            My Listings
-          </MenuItem>
-          )}
-          {isSeller() && (
-          <MenuItem onClick={handleAddBike}>
-            Add Bike
-          </MenuItem>
-          )}
           <MenuItem onClick={handleLogout}>
             Logout
           </MenuItem>

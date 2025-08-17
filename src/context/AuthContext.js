@@ -97,9 +97,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (email, password, role) => {
+  const register = async (email, password, firstName, lastName, role) => {
     try {
-      const response = await authAPI.register({ email, password, role });
+      const response = await authAPI.register({ email, password, first_name: firstName, last_name: lastName, role });
       
       // Check if response indicates OTP verification is needed
       if (response.data.message && response.data.message.includes('OTP')) {
